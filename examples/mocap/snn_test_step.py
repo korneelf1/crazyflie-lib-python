@@ -74,10 +74,13 @@ def run_sequence(cf):
     deactivate_snn_controller(cf)
     start_onboard_logging(cf)
     t_start = time.time()
+    print("Takeoff")
     commander.takeoff(1.0, 2.0)
     time.sleep(2.5)
+    print("Hovering...")
     commander.go_to(x, y, z, yaw, 1)
     time.sleep(1.0)
+    
     if snn_control:
         print("Activating SNN controller")
         set_snn_I_gain(cf, 0.0)

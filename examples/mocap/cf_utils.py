@@ -33,11 +33,42 @@ def adjust_orientation_sensitivity(cf):
     cf.param.set_value('locSrv.extQuatStdDev', ORIENTATION_STD_DEV)
 
 def activate_snn_controller(cf):
-    cf.param.set_value('pid_rate.snnEn', '1')
+    # first warm up
+    # cf.param.set_value('snn_ct.warmUp', '1')
+    cf.param.set_value('snn_mc.use_snn', '1')
+    cf.param.set_value('snn_ct.snnType', '0')
+    time.sleep(0.5)
+    # cf.param.set_value('snn_ct.warmUp', '0')
+
     time.sleep(0.1)
 
 def deactivate_snn_controller(cf):
-    cf.param.set_value('pid_rate.snnEn', '0')
+    cf.param.set_value('snn_mc.use_snn', '0')
+    
+    time.sleep(0.1)
+
+def set_hover_mode_learned(cf):
+    cf.param.set_value(cf, "rlt.trigger", 0) # setting the trigger mode to the custom command (cf. https://github.com/arplaboratory/learning_to_fly_controller/blob/0a7680de591d85813f1cd27834b240aeac962fdd/rl_tools_controller.c#L80)
+    cf.param.set_value(cf, "rlt.wn", 1)
+    cf.param.set_value(cf, "rlt.motor_warmup", 1)
+    cf.param.set_value(cf, "rlt.target_z", 2)
+    input("Press enter to start hovering")
+    prev = time.time()
+    acc = 0
+    cnt = 0
+    while True:
+        i = input("Hold enter to fly")
+        if i == "q":
+            break
+        current = time.time()
+        acc += current - prev
+        cnt += 1
+        if cnt % 100 == 0:
+            print(f"Average rate: {1/(acc / cnt):.3f}Hz")
+            acc = 0
+            cnt = 0
+        prev = current
+        send_learned_policy_packet(cf)
 
 def set_snn_I_gain(cf, gain):
     cf.param.set_value('pid_rate.snnIGain', str(gain))
@@ -51,6 +82,24 @@ def stop_onboard_logging(cf):
     cf.param.set_value("usd.logging", "0")
     time.sleep(0.05)
 
+def get_group_list(cf):
+    """
+    Get the list of groups that are available for the current firmware.
+    """
+    print("Available groups:")
+    for group in cf.param.values.keys():
+        print(group)
+    time.sleep(1)
+    
+def get_param_list(cf, group):
+    """
+    Read a value for the supplied parameter. This can block for a period
+    of time if the parameter values have not been fetched yet.
+    """
+    params_group = cf.param.values[group]
+    for key in params_group.keys():
+        print(f"{key}: {params_group[key]}")
+    time.sleep(1) 
 
 def upload_trajectory(cf, trajectory_id, trajectory):
     trajectory_mem = cf.mem.get_mems(MemoryElement.TYPE_TRAJ)[0]
@@ -119,6 +168,8 @@ def reset_estimator(cf):
     time.sleep(0.1)
 
     wait_for_position_estimator(cf)
+
+
 
 def send_extpose_quat(cf, x, y, z, quat):
     """

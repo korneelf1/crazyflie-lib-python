@@ -250,7 +250,7 @@ def run_sequence(cf):
     yaw = 0
 
     commander = cf.high_level_commander
-    deactivate_snn_controller(cf)
+    # deactivate_snn_controller(cf)
     start_onboard_logging(cf)
     t_start = time.time()
     commander.takeoff(1.0, 2.0)

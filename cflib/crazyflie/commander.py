@@ -198,6 +198,7 @@ class Commander():
         x, y, z are in m
         yaw is in degrees
         """
+        
         pk = CRTPPacket()
         pk.port = CRTPPort.COMMANDER_GENERIC
         pk.channel = SET_SETPOINT_CHANNEL

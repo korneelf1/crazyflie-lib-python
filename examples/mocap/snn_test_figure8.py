@@ -45,7 +45,7 @@ uri = uri_helper.uri_from_env(default='radio://0/80/2M/E7E7E7E7E0')
 rigid_body_name = 'cf'
 
 # Using SNN control or not
-snn_control = False
+snn_control = True
 
 # battery variables
 batt_level = 0
