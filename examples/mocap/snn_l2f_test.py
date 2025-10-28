@@ -210,13 +210,18 @@ def run_sequence(cf):
 
     if SNN_CONTROL:
         
+        print("Preparing to activate SNN controller")
+        # Ensure we're at the hover position before switching
+        commander.go_to(x, y, z, yaw, 0.5)
+        time.sleep(0.5)
         
-        # stop_onboard_logging(cf)
-        # time.sleep(0.1)
-        # start_onboard_logging(cf)
-        # setpoint(x, y, z, yaw)
-
+        # Set I-gain before activation to prevent integration windup
+        set_snn_I_gain(cf, 0.0)
+        time.sleep(0.1)
+        
+        print("Activating SNN controller")
         activate_snn_controller(cf)
+        time.sleep(0.5)  # Give it time to stabilize
         if DO_SQUARE:
             do_square(x, y, z, yaw, commander)
         elif DO_FORWARD:
