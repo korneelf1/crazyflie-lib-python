@@ -13,7 +13,7 @@ DO_SQUARE = False
 DO_FORWARD = False
 AXIS_EXPLORATION = False
 GATHER_DATA = False
-DO_EIGHT_FIGURE = True
+DO_EIGHT_FIGURE = False
 # URI to the Crazyflie to connect to
 uri = uri_helper.uri_from_env(default='radio://0/80/2M/E7E7E7E7E0')
 
@@ -238,7 +238,7 @@ def run_sequence(cf):
             
             
         else:
-            time.sleep(2)
+            time.sleep(5)
         # if KeyboardInterrupt:
         #     deactivate_snn_controller(cf)
         #     commander.land(0.0, 4.0)
